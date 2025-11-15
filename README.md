@@ -1,59 +1,75 @@
-# yt-dlp-ultra (Safe Docker Setup for Windows 11)
+# yt-dlp-ultra  
+### Ultra-Secure yt-dlp Setup Using Docker (Windows 11)
 
-This is a fully isolated, hardened setup for using yt-dlp on Windows 11. Everything runs inside a locked-down Docker container so yt-dlp cannot access your system, files, registry, or network outside one folder. This README explains every step, how to use it, how to update it, and how to delete everything safely.
+This project provides a **fully isolated**, **high-security**, **zero-risk** environment for running `yt-dlp` on Windows.  
+Everything runs inside a locked-down Docker container with **no access** to your system, registry, or files — only a single download folder.
+
+This setup is ideal if you:
+- Don’t want to trust unknown binaries  
+- Want maximum sandboxing  
+- Use multiple devices and want a portable setup  
+- Want instant rebuilding and isolation on every run  
 
 ---
 
-## 1. Folder Structure (Create These)
+## 📁 Folder Structure
 
-You need two folders:
+You need **two** folders:
 
-### 1. Docker workspace (contains Dockerfile, yt.bat, README)
+### 1️⃣ Docker workspace (this repository)
+Contains:
+- `Dockerfile`
+- `yt.bat`
+- `README.md`
+
+Example:
 ```
-C:\yt-dlp-safe
+C:\yt-dlp-ultra
 ```
 
-### 2. Download output (only place container can write)
+### 2️⃣ Download output folder (NOT in repo)
+Create manually on each device:
+
 ```
 C:\yt-dlp-downloads
 ```
 
-Everything yt-dlp downloads goes here. It cannot access anything else.
+This is the **only folder the container can write to**.
 
 ---
 
-## 2. Requirements
+## 🛠 Requirements
 
 - Windows 11  
 - Docker Desktop installed  
-- Docker Desktop running  
-- Recommended: WSL2 backend enabled  
+- Docker running  
+- (Optional but recommended) WSL2 backend enabled  
 
 ---
 
-## 3. Build the Docker Image
+## 🧱 Building the Docker Image
 
-Open **PowerShell** and run:
+Open PowerShell:
 
 ```powershell
-cd C:\yt-dlp-safe
+cd C:\yt-dlp-ultra
 docker build -t yt-dlp-ultra .
 ```
 
-This creates a container environment with:
+This builds a secure container with:
+- Python 3.12 slim (official)
+- yt-dlp (via pip from official repo)
+- ffmpeg (from Debian repo)
+- A non-root user (`downloader`)
+- Minimal attack surface  
 
-- Python 3.12 slim (official)  
-- yt-dlp (installed via pip from official source)  
-- ffmpeg (from Debian repo)  
-- Non-root user named `downloader`  
-
-Rebuild only when you want updates.
+Rebuild when you want the latest yt-dlp/ffmpeg.
 
 ---
 
-## 4. yt.bat (Shortcut Command)
+## ⚡ yt.bat — Easy Command Wrapper
 
-Create a file named `yt.bat` inside `C:\yt-dlp-safe`:
+Place this file in the same folder as the Dockerfile:
 
 ```bat
 @echo off
@@ -67,36 +83,36 @@ docker run --rm ^
   yt-dlp-ultra yt-dlp %*
 ```
 
-### Security Flags Explained
+### 🔐 Security Features
 
-- `--rm` → container deletes itself after use  
-- `--security-opt no-new-privileges` → blocks privilege escalation  
-- `--cap-drop ALL` → removes all Linux kernel capabilities  
-- `--pids-limit 200` → prevents fork bombs  
-- `--network=bridge` → isolates network access  
-- `--memory=512m` → prevents memory abuse  
-- `-v ...` → ONLY allows writing to `C:\yt-dlp-downloads`  
+| Option | Protection |
+|-------|------------|
+| `--rm` | Auto-delete container after use |
+| `--security-opt no-new-privileges` | No privilege escalation allowed |
+| `--cap-drop ALL` | Removes all Linux capabilities |
+| `--pids-limit 200` | Prevents fork-bomb attacks |
+| `--network=bridge` | Container isolated from host |
+| `--memory=512m` | Memory abuse protection |
+| `-v …` | ONLY allows writing to downloads folder |
 
-This setup ensures maximum isolation.
+This is maximum isolation.
 
 ---
 
-## 5. How to Use (Actual Commands)
+## 🚀 How to Use
 
-### 5.1. Run from inside the folder
-
+### ▶ Option A — Run from inside the folder:
 ```powershell
-cd C:\yt-dlp-safe
+cd C:\yt-dlp-ultra
 .\yt "https://www.youtube.com/watch?v=VIDEO_ID"
 ```
 
-### 5.2. Run from anywhere using full path
-
+### ▶ Option B — Run from anywhere:
 ```powershell
-"C:\yt-dlp-safe\yt.bat" "https://www.youtube.com/watch?v=VIDEO_ID"
+"C:\yt-dlp-ultra\yt.bat" "https://www.youtube.com/watch?v=VIDEO_ID"
 ```
 
-All downloaded files appear in:
+Downloads always appear in:
 
 ```
 C:\yt-dlp-downloads
@@ -104,96 +120,91 @@ C:\yt-dlp-downloads
 
 ---
 
-## 6. Common Examples
+## 🎧 Common Commands
 
-### Download best video+audio
+### Best video+audio:
 ```powershell
 .\yt "https://www.youtube.com/watch?v=VIDEO_ID"
 ```
 
-### Download MP3 audio
+### MP3 audio:
 ```powershell
 .\yt -x --audio-format mp3 "https://www.youtube.com/watch?v=VIDEO_ID"
 ```
 
-### Download WAV audio
+### WAV audio:
 ```powershell
 .\yt -x --audio-format wav "https://www.youtube.com/watch?v=VIDEO_ID"
 ```
 
-### Custom filename
+### Custom filename:
 ```powershell
 .\yt -o "myfile.%(ext)s" "https://www.youtube.com/watch?v=VIDEO_ID"
 ```
 
-### Download playlist
+### Playlist:
 ```powershell
 .\yt --yes-playlist "PLAYLIST_URL"
 ```
 
 ---
 
-## 7. Updating yt-dlp & ffmpeg
+## 🔄 Updating yt-dlp / ffmpeg
 
-Just rebuild:
+Rebuild the image:
 
 ```powershell
-cd C:\yt-dlp-safe
+cd C:\yt-dlp-ultra
 docker build -t yt-dlp-ultra .
 ```
 
-This fetches the latest Python, yt-dlp, and ffmpeg.
+This fetches the latest versions automatically.
 
 ---
 
-## 8. Deleting / Cleaning Everything
+## 🗑 Cleaning / Removing Everything
 
-### Delete Docker image:
+### Remove Docker image:
 ```powershell
 docker image rm yt-dlp-ultra
 ```
 
-### Delete folders:
+### Remove local folders:
 ```powershell
-Remove-Item -Recurse -Force C:\yt-dlp-safe
+Remove-Item -Recurse -Force C:\yt-dlp-ultra
 Remove-Item -Recurse -Force C:\yt-dlp-downloads
 ```
 
-Everything is now erased safely.
-
 ---
 
-## 9. Troubleshooting
+## 🧰 Troubleshooting
 
-### "yt-dlp-ultra not found"
-You forgot to build:
+### ❗ `yt-dlp-ultra` not found  
+You forgot to build the image:
 
 ```powershell
-cd C:\yt-dlp-safe
+cd C:\yt-dlp-ultra
 docker build -t yt-dlp-ultra .
 ```
 
-### "yt is not recognized" in PowerShell
+### ❗ PowerShell: `yt is not recognized`  
 Use:
-
 ```powershell
 .\yt ...
 ```
-
 or full path:
-
 ```powershell
-"C:\yt-dlp-safe\yt.bat" ...
+"C:\yt-dlp-ultra\yt.bat" ...
 ```
 
-### Downloads not appearing?
-Check that this folder exists:
-
+### ❗ Downloads not appearing  
+Ensure this exists:
 ```
 C:\yt-dlp-downloads
 ```
 
 ---
 
-## DONE 🎉  
-You now have the safest possible yt-dlp setup on Windows 11 — fully isolated, secure, and simple to use.
+## ✅ Done  
+You now have a fully portable, ultra-secure yt-dlp environment you can use on **any device** via your GitHub repo.
+
