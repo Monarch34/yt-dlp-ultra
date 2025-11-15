@@ -1,0 +1,60 @@
+# ------------------------
+# General OS / Editor junk
+# ------------------------
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# macOS (in case you ever use it)
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Linux
+.*.swp
+.*.swo
+
+# IDEs / Editors
+.vscode/
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Python / Virtualenv (if you ever add scripts)
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.log
+env/
+venv/
+.venv/
+ENV/
+env.bak/
+venv.bak/
+
+# ------------------------
+# Docker / Build artifacts
+# ------------------------
+# Docker context junk
+*.tar
+*.tmp
+*.bak
+
+# If you ever build images and export them
+*.img
+*.qcow2
+
+# ------------------------
+# Project-specific
+# ------------------------
+# Never track downloaded media
+# (just in case you ever run git inside downloads folder by mistake)
+yt-dlp-downloads/
+downloads/
+output/
